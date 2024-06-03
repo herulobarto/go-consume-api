@@ -44,8 +44,33 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func Create(w http.ResponseWriter, r *http.Request) {
 
+	var post Post
+	var data map[string]interface{}
+
+	id := r.URL.Query().Get("id")
+	if id != "" {
+		res, err := http.Get(BASE_URL + "/posts/" + id)
+		if err != nil {
+			log.Print(err)
+			http.Error(w, "Failed to fetch post", http.StatusInternalServerError)
+			return
+		}
+		defer res.Body.Close()
+
+		decoder := json.NewDecoder(res.Body)
+		if err := decoder.Decode(&post); err != nil {
+			log.Print(err)
+			http.Error(w, "Failed to decode post", http.StatusInternalServerError)
+			return
+		}
+
+		data = map[string]interface{}{
+			"post": post,
+		}
+	}
+
 	temp, _ := template.ParseFiles("views/create.html")
-	temp.Execute(w, nil)
+	temp.Execute(w, data)
 
 }
 
