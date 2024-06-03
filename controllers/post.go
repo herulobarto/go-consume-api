@@ -14,6 +14,7 @@ type Post struct {
 	UserId int64  `json:"userId"`
 }
 
+// ada di https://jsonplaceholder.typicode.com/guide/ pilih listing all resources
 var BASE_URL = "https://jsonplaceholder.typicode.com"
 
 func Index(w http.ResponseWriter, r *http.Request) {
