@@ -3,9 +3,11 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Post struct {
@@ -78,8 +80,12 @@ func Store(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 
+	id := r.Form.Get("post_id")
+
+	idInt, _ := strconv.ParseInt(id, 10, 64)
+
 	newPost := Post{
-		Id:     0,
+		Id:     idInt,
 		Title:  r.Form.Get("post_title"),
 		Body:   r.Form.Get("post_body"),
 		UserId: 1,
@@ -88,10 +94,25 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	JsonValue, _ := json.Marshal(newPost)
 	buff := bytes.NewBuffer(JsonValue)
 
-	req, err := http.NewRequest(http.MethodPost, BASE_URL+"/posts", buff)
+	var req *http.Request
+	var err error
+
+	if id != "" {
+		// update
+		fmt.Println("Proses Update")
+		req, err = http.NewRequest(http.MethodPut, BASE_URL+"/posts/"+id, buff)
+
+	} else {
+		// create
+		fmt.Println("Proses Create")
+		req, err = http.NewRequest(http.MethodPost, BASE_URL+"/posts", buff)
+	}
+
 	if err != nil {
 		log.Print(err)
+
 	}
+
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
 	httpClient := &http.Client{}
@@ -108,11 +129,11 @@ func Store(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 	}
 
-	// fmt.Println(res.StatusCode)
-	// fmt.Println(res.Status)
-	// fmt.Println(postResponse)
+	fmt.Println(res.StatusCode)
+	fmt.Println(res.Status)
+	fmt.Println(postResponse)
 
-	if res.StatusCode == 201 {
+	if res.StatusCode == 201 || res.StatusCode == 200 {
 		http.Redirect(w, r, "/posts", http.StatusSeeOther)
 	}
 
