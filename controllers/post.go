@@ -141,4 +141,26 @@ func Store(w http.ResponseWriter, r *http.Request) {
 
 func Delete(w http.ResponseWriter, r *http.Request) {
 
+	id := r.URL.Query().Get("id")
+
+	req, err := http.NewRequest(http.MethodDelete, BASE_URL+"/posts/"+id, nil)
+	if err != nil {
+		log.Print(err)
+	}
+
+	httpClient := &http.Client{}
+	res, err := httpClient.Do(req)
+	if err != nil {
+		log.Print(err)
+	}
+
+	defer res.Body.Close()
+
+	fmt.Println(res.StatusCode)
+	fmt.Println(res.Status)
+	fmt.Println("Data berhasil di hapus")
+
+	if res.StatusCode == 200 {
+		http.Redirect(w, r, "/posts", http.StatusSeeOther)
+	}
 }
