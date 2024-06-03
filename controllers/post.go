@@ -1,8 +1,14 @@
 package controllers
 
-import "net/http"
+import (
+	"html/template"
+	"net/http"
+)
 
 func Index(w http.ResponseWriter, r *http.Request) {
+
+	temp, _ := template.ParseFiles("views/index.html")
+	temp.Execute(w, nil)
 
 }
 

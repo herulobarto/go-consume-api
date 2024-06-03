@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	post "github.com/herulobarto/go-consume-api/controllers"
 )
 
 func main() {
@@ -13,7 +15,7 @@ func main() {
 	http.HandleFunc("/post/store", post.Store)
 	http.HandleFunc("/post/delete", post.Delete)
 
-	log.Print("Server started on port: http://localhost:8000")
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	log.Print("Server started on port: http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
